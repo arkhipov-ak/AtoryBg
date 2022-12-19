@@ -1,15 +1,18 @@
-import { prop } from "@typegoose/typegoose";
-import { Base, TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
+import { prop } from '@typegoose/typegoose'
+import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses'
 
 export interface AuthorModel extends Base {}
 
 export class AuthorModel extends TimeStamps {
 	@prop()
-	name: string
+	title: string
 
 	@prop()
-	slug:string
+	slug: string
 
 	@prop()
-	photo: string
+	poster: string
+
+	@prop()
+	bigPoster: string
 }

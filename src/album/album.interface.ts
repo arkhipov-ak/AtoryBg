@@ -3,5 +3,5 @@ export interface ICollection {
 	title: string
 	slug: string
 	poster: string
-	// tracks: string[]
+	author: string
 }

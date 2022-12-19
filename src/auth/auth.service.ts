@@ -20,7 +20,6 @@ export class AuthService {
 
 	async login(dto: AuthDto) {
 		const user = await this.validateUser(dto)
-		console.log(user)
 
 		const tokens = await this.issueTokenPair(String(user._id))
 
@@ -29,7 +28,7 @@ export class AuthService {
 			...tokens,
 		}
 	}
-	
+
 	async register(dto: AuthDto) {
 		const oldUser = await this.UserModel.findOne({ email: dto.email })
 		if (oldUser)
@@ -42,6 +41,7 @@ export class AuthService {
 		const newUser = new this.UserModel({
 			email: dto.email,
 			name: dto.name,
+			poster: dto.poster,
 			password: await hash(dto.password, salt),
 		})
 
@@ -54,7 +54,6 @@ export class AuthService {
 			...tokens,
 		}
 	}
-
 
 	async getNewTokens({ refreshToken }: RefreshTokenDto) {
 		if (!refreshToken) throw new UnauthorizedException('Please sign up!')
@@ -73,7 +72,6 @@ export class AuthService {
 		}
 	}
 
-	
 	async validateUser(dto: AuthDto) {
 		const user = await this.UserModel.findOne({ email: dto.email })
 		if (!user) throw new UnauthorizedException('User not found')
@@ -103,6 +101,7 @@ export class AuthService {
 			_id: user._id,
 			name: user.name,
 			email: user.email,
+			poster: user.poster,
 			isAdmin: user.isAdmin,
 		}
 	}

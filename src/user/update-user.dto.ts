@@ -1,9 +1,9 @@
-import { prop } from "@typegoose/typegoose";
+import { prop } from '@typegoose/typegoose'
 
 export class UpdateUserDto {
 	@prop()
 	name: string
 
 	@prop()
-	avatar: string
+	poster: string
 }

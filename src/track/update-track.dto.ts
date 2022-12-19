@@ -1,6 +1,6 @@
-import { IsArray, IsOptional, IsString } from "class-validator";
+import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator'
 
-export class UpdateMovieDto {
+export class UpdateTrackDto {
 	@IsString()
 	poster: string
 
@@ -11,8 +11,11 @@ export class UpdateMovieDto {
 	slug: string
 
 	@IsString()
-	trackUrl: string	
-	
+	trackUrl: string
+
+	@IsNumber()
+	duration: number
+
 	@IsArray()
 	@IsString({ each: true })
 	author: string[]

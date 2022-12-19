@@ -3,7 +3,6 @@ import { Base, TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
 import { AlbumModel } from "src/album/album.model";
 import { AuthorModel } from "src/author/author.model";
 
-// добавлено
 export interface TrackModel extends Base {}
 
 export class TrackModel extends TimeStamps {
@@ -16,15 +15,18 @@ export class TrackModel extends TimeStamps {
 	@prop()
 	slug: string
 
-	@prop({ default: 0})
+	@prop()
+	duration: number
+
+	@prop({ default: 0 })
 	countPlays: number
 
 	@prop()
 	trackUrl: string
 
-	@prop({ref: () => AlbumModel})
+	@prop({ ref: () => AlbumModel })
 	album: Ref<AlbumModel>[]
 
-	@prop({ref: () => AuthorModel})
+	@prop({ ref: () => AuthorModel })
 	author: Ref<AuthorModel>[]
 }

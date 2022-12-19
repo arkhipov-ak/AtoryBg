@@ -1,12 +1,16 @@
-import { IsString } from "class-validator";
+import { IsOptional, IsString } from 'class-validator'
 
 export class AuthorDto {
 	@IsString()
-	name: string
+	title: string
 
 	@IsString()
 	slug: string
 
 	@IsString()
-	photo:string
+	poster: string
+
+	@IsString()
+	@IsOptional()
+	bigPoster: string
 }

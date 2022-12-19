@@ -1,97 +1,110 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { ModelType } from "@typegoose/typegoose/lib/types";
-import { Types } from "mongoose";
-import { InjectModel } from "nestjs-typegoose";
-import { TrackModel } from "./track.model";
-import { UpdateMovieDto } from "./update-track.dto";
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { ModelType } from '@typegoose/typegoose/lib/types'
+import { Types } from 'mongoose'
+import { InjectModel } from 'nestjs-typegoose'
+import { TrackModel } from './track.model'
+import { UpdateTrackDto } from './update-track.dto'
 
 @Injectable()
 export class TrackService {
-  constructor(
-    @InjectModel(TrackModel) private readonly TrackModel: ModelType<TrackModel>
-  ) {}
+	constructor(
+		@InjectModel(TrackModel) private readonly TrackModel: ModelType<TrackModel>
+	) {}
 
-  async getAll(searchTerm?: string) {
-    console.log(searchTerm);
-    let options = {};
+	async getAll(searchTerm?: string) {
+		let options = {}
 
-    if (searchTerm) {
-      options = {
-        $or: [
-          {
-            title: new RegExp(searchTerm.trim(), "i"),
-          },
-          {
-            authors: new RegExp(searchTerm.trim(), "gi"),
-          },
-        ],
-      };
-    }
+		if (searchTerm) {
+			options = {
+				$or: [
+					{
+						title: new RegExp(searchTerm.trim(), 'gi'),
+					},
+				],
+			}
+		}
 
-    return this.TrackModel.find(options)
-      .select("-updatedAt -__v")
-      .sort({ createdAt: "desc" })
-      .populate("album author")
-      .exec();
-  }
+		return this.TrackModel.find(options)
+			.select('-updatedAt -__v')
+			.sort({ createdAt: 'desc' })
+			.populate('album author')
+			.exec()
+	}
 
-  async create(dto: UpdateMovieDto) {
-    const newTrack = new this.TrackModel({
-      poster: dto.poster,
-      title: dto.title,
-      slug: dto.slug,
-      album: dto.album,
-      trackUrl: dto.trackUrl,
-      author: dto.author,
-    });
+	async create(dto: UpdateTrackDto) {
+		const newTrack = new this.TrackModel({
+			poster: dto.poster,
+			title: dto.title,
+			slug: dto.slug,
+			duration: dto.duration,
+			album: dto.album,
+			trackUrl: dto.trackUrl,
+			author: dto.author,
+			countPlays: Math.floor(Math.random() * (10000000 - 1000)) + 1000,
+		})
 
-    const track = await newTrack.save();
+		const track = await newTrack.save()
 
-    return {
-      track,
-    };
-  }
+		return {
+			track,
+		}
+	}
 
-  async updateCountOpened(slug: string) {
-    return this.TrackModel.findOneAndUpdate(
-      { slug },
-      { $inc: { countPlays: 1 } }
-    ).exec();
-  }
+	async updateCountOpened(slug: string) {
+		return this.TrackModel.findOneAndUpdate(
+			{ slug },
+			{ $inc: { countPlays: 1 } }
+		).exec()
+	}
 
-  async byAuthor(authorIds: Types.ObjectId) {
-    if (!authorIds) throw new NotFoundException("Missing authorId");
-    const data = await this.TrackModel.find({ author: authorIds }).exec();
+	async getMostPopular() {
+		return this.TrackModel.find({ countPlays: { $gt: 0 } })
+			.sort({ countPlays: -1 })
+			.populate('album author')
+			.exec()
+	}
 
-    if (!data) throw new NotFoundException("Tracks not found");
+	async getMostNew() {
+		return this.TrackModel.find()
+			.sort({ createdAt: 'desc' })
+			.populate('album author')
+			.exec()
+	}
 
-    const totalPlays = data.reduce(
-      (amount, track) => amount + track.countPlays,
-      0
-    );
+	async byAuthor(authorIds: Types.ObjectId) {
+		if (!authorIds) throw new NotFoundException('Missing authorId')
+		const data = await this.TrackModel.find({ author: authorIds })
+			.populate('album author')
+			.exec()
 
-    return {
-      totalPlays: totalPlays,
-      data,
-    };
-  }
+		if (!data) throw new NotFoundException('Tracks not found')
 
-  async byAlbum(albumIds: Types.ObjectId[]) {
-    if (!albumIds) throw new NotFoundException("Missing albumIds");
-    const data = await this.TrackModel.find({
-      album: { $in: albumIds },
-    }).exec();
+		const totalPlays = data.reduce(
+			(amount, track) => amount + track.countPlays,
+			0
+		)
 
-    if (!data) throw new NotFoundException("Tracks not found");
+		return { data, totalPlays }
+	}
 
-    const totalPlays = data.reduce(
-      (amount, track) => amount + track.countPlays,
-      0
-    );
+	async byAlbum(albumIds: Types.ObjectId[]) {
+		if (!albumIds) throw new NotFoundException('Missing albumIds')
+		const data = await this.TrackModel.find({
+			album: { $in: albumIds },
+		})
+			.populate('author album')
+			.exec()
 
-    return {
-      totalPlays: totalPlays,
-      data,
-    };
-  }
+		if (!data) throw new NotFoundException('Tracks not found')
+
+		const totalDuration = data.reduce(
+			(amount, track) => amount + track.duration,
+			0
+		)
+
+		return {
+			totalDuration,
+			data,
+		}
+	}
 }

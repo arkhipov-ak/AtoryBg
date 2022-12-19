@@ -9,9 +9,12 @@ export class AuthDto {
 	})
 	@IsString()
 	password: string
-	
+
 	@IsOptional()
 	@IsString()
 	name?: string
 
+	@IsOptional()
+	@IsString()
+	poster?: string
 }

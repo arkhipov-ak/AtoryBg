@@ -1,29 +1,57 @@
-import { Body, Controller, Get, HttpCode, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
-import { Types } from 'mongoose';
-import { User } from './decorators/user.decorators';
-import { UpdateUserDto } from './update-user.dto';
-import { UserModel } from './user.model';
-import { UserService } from './user.service';
+import {
+	Body,
+	Controller,
+	Get,
+	HttpCode,
+	Put,
+	UsePipes,
+	ValidationPipe,
+} from '@nestjs/common'
+import { Types } from 'mongoose'
+import { Auth } from 'src/auth/decorators/auth.decorator'
+import { IdValidationPipe } from 'src/pipes/id.validation.pipe'
+import { User } from './decorators/user.decorators'
+import { UpdateUserDto } from './update-user.dto'
+import { UserModel } from './user.model'
+import { UserService } from './user.service'
 
 @Controller('user')
 export class UserController {
-	constructor( private readonly UserService: UserService) {}
+	constructor(private readonly UserService: UserService) {}
+
+	@Get('profile')
+	@Auth()
+	async getProfile(@User('_id') _id: string) {
+		return this.UserService.byId(_id)
+	}
 
 	@UsePipes(new ValidationPipe())
 	@Put('profile')
 	@HttpCode(200)
+	@Auth()
 	async updateProfile(@User('_id') _id: string, @Body() dto: UpdateUserDto) {
-		return this.UserService.updateProfile(_id,dto)
+		return this.UserService.updateProfile(_id, dto)
 	}
 
-	@Post('profile/favorites')
-	async getFavorites(@Body('_id') _id: string) {
+	@Get('profile/favorites')
+	@Auth()
+	async getFavorites(@User('_id') _id: string) {
 		return this.UserService.getFavoriteTracks(_id)
+	}
+
+	@Get('/playlists')
+	@Auth()
+	async getPlaylists(@User('_id') _id: string) {
+		return this.UserService.getPlaylists(_id)
 	}
 
 	@Put('profile/favorites')
 	@HttpCode(200)
-	async toggleFavorite(@Body('trackId') trackId: Types.ObjectId, @User() user: UserModel) {
-		return this.UserService.toggleFavorite(trackId,user)
+	@Auth()
+	async toggleFavorite(
+		@Body('trackId', IdValidationPipe) trackId: Types.ObjectId,
+		@User() user: UserModel
+	) {
+		return this.UserService.toggleFavorite(trackId, user)
 	}
 }

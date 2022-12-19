@@ -1,19 +1,19 @@
-import { prop, Ref } from "@typegoose/typegoose";
-import { Base, TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
-import { TrackModel } from "src/track/track.model";
+import { prop, Ref } from '@typegoose/typegoose'
+import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses'
+import { AuthorModel } from 'src/author/author.model'
 
 export interface AlbumModel extends Base {}
 
 export class AlbumModel extends TimeStamps {
 	@prop()
-	title: string;
+	title: string
 
 	@prop()
-	slug: string;
+	slug: string
 
 	@prop()
 	poster: string
 
-	// @prop({ref: () => TrackModel})
-	// tracks: Ref<TrackModel>
+	@prop({ ref: () => AuthorModel })
+	author: Ref<AuthorModel>[]
 }

@@ -1,6 +1,7 @@
 import { prop, Ref } from '@typegoose/typegoose'
 import { TimeStamps, Base } from '@typegoose/typegoose/lib/defaultClasses'
 import { IsOptional } from 'class-validator'
+import { PlaylistModel } from 'src/playlist/playlist.model'
 import { TrackModel } from 'src/track/track.model'
 
 export interface UserModel extends Base {}
@@ -12,16 +13,19 @@ export class UserModel extends TimeStamps {
 	@prop()
 	password: string
 
-	@prop({default : 'Guest'})
+	@prop({ default: 'Guest' })
 	name: string
 
 	@IsOptional()
-	@prop()
-	avatar: string
+	@prop({ default: null })
+	poster: string
 
 	@prop({ default: false })
 	isAdmin?: boolean
 
-	@prop({default: [], ref: () => TrackModel})
+	@prop({ default: [], ref: () => TrackModel })
 	favorites?: Ref<TrackModel>[]
+
+	@prop({ default: [], ref: () => PlaylistModel })
+	playlists?: Ref<PlaylistModel>[]
 }
