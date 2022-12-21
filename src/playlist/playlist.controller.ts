@@ -33,9 +33,9 @@ export class PlaylistController {
 		return this.PlaylistService.updatePlaylist(_id, dto)
 	}
 
-	@Put('tracks/:id')
+	@Put('tracks-update/:id')
 	@HttpCode(200)
-	async update(
+	async deleteTrack(
 		@Param('id', IdValidationPipe) _id: string,
 		@Body()
 		track: {

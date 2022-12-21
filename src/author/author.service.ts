@@ -53,30 +53,27 @@ export class AuthorService {
 			}
 		}
 
-		return (
-			this.AuthorModel.aggregate()
-				.match(options)
-				.lookup({
-					from: 'Track',
-					localField: '_id',
-					foreignField: 'author',
-					as: 'tracks',
-				})
-				.addFields({
-					countTracks: {
-						$size: '$tracks',
-					},
-					amountPlays: {
-						$sum: '$tracks.countPlays',
-					},
-				})
-				.project({ __v: 0, updatedAt: 0, tracks: 0 })
-				// .sort({
-				// 	countTracks: -1,
-				// 	amountPlays: -1,
-				// })
-				.exec()
-		)
+		return this.AuthorModel.aggregate()
+			.match(options)
+			.lookup({
+				from: 'Track',
+				localField: '_id',
+				foreignField: 'author',
+				as: 'tracks',
+			})
+			.addFields({
+				countTracks: {
+					$size: '$tracks',
+				},
+				amountPlays: {
+					$sum: '$tracks.countPlays',
+				},
+			})
+			.project({ __v: 0, updatedAt: 0, tracks: 0 })
+			.sort({
+				amountPlays: -1
+			})
+			.exec()
 	}
 
 	async create(dto: AuthorDto) {

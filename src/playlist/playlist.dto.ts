@@ -1,4 +1,5 @@
-import { IsArray, IsString } from 'class-validator'
+import { IsArray, IsOptional, IsString } from 'class-validator'
+import { Types } from 'mongoose'
 
 export class CreatePlaylistDto {
 	@IsString()
@@ -17,8 +18,10 @@ export class CreatePlaylistDto {
 
 export class UpdatePlaylistDto {
 	@IsString()
+	@IsOptional()
 	name: string
 
+	@IsOptional()
 	@IsString()
 	poster: string
 }

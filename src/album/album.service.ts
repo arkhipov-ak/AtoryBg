@@ -2,15 +2,13 @@ import { Injectable } from '@nestjs/common'
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import { InjectModel } from 'nestjs-typegoose'
 import { TrackService } from 'src/track/track.service'
-import { ICollection } from './album.interface'
 import { AlbumModel } from './album.model'
 import { CreateAlbumDto } from './create-album.dto'
 
 @Injectable()
 export class AlbumService {
 	constructor(
-		@InjectModel(AlbumModel) private readonly AlbumModel: ModelType<AlbumModel>,
-		private readonly TrackService: TrackService
+		@InjectModel(AlbumModel) private readonly AlbumModel: ModelType<AlbumModel>
 	) {}
 
 	async bySlug(slug: string) {
@@ -54,16 +52,24 @@ export class AlbumService {
 	}
 
 	async getMostPopular() {
-		const albums = await this.getAll()
-
-		const collections = await Promise.all(
-			albums.map(async (album) => {
-				const tracksByAlbums = await this.TrackService.byAlbum([album._id])
-
-				return tracksByAlbums
+		const albums = await this.AlbumModel.aggregate()
+			.lookup({
+				from: 'Track',
+				localField: '_id',
+				foreignField: 'album',
+				as: 'tracks',
 			})
-		)
+			.addFields({
+				amountPlays: {
+					$sum: '$tracks.countPlays',
+				},
+			})
+			.project({ __v: 0, updatedAt: 0, tracks: 0 })
+			.sort({
+				amountPlays: -1,
+			})
+			.exec()
 
-		return collections
+		return this.AlbumModel.populate(albums, { path: 'author' })
 	}
 }

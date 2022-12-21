@@ -18,16 +18,45 @@ export class TrackService {
 			options = {
 				$or: [
 					{
-						title: new RegExp(searchTerm.trim(), 'gi'),
+						authorTitle: new RegExp(searchTerm.trim(), 'i'),
+					},
+					{
+						albumTitle: new RegExp(searchTerm.trim(), 'i'),
+					},
+					{
+						title: new RegExp(searchTerm.trim(), 'i'),
 					},
 				],
 			}
 		}
 
-		return this.TrackModel.find(options)
-			.select('-updatedAt -__v')
-			.sort({ createdAt: 'desc' })
-			.populate('album author')
+		return this.TrackModel.aggregate()
+			.lookup({
+				from: 'Author',
+				localField: 'author',
+				foreignField: '_id',
+				as: 'author',
+			})
+			.lookup({
+				from: 'Album',
+				localField: 'album',
+				foreignField: '_id',
+				as: 'album',
+			})
+			.addFields({
+				authorTitle: '$author.title',
+				albumTitle: '$album.title',
+			})
+			.match(options)
+			.project({
+				__v: 0,
+				updatedAt: 0,
+				authorTitle: 0,
+				albumTitle: 0,
+			})
+			.sort({
+				createdAt: -1,
+			})
 			.exec()
 	}
 

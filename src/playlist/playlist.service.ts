@@ -69,7 +69,9 @@ export class PlaylistService {
 
 		if (!updateDoc) throw new NotFoundException('Playlist not found')
 
-		updateDoc.tracks = [...updateDoc.tracks, trackId]
+		updateDoc.tracks = updateDoc.tracks.includes(trackId)
+			? updateDoc.tracks.filter((id) => String(id) !== String(trackId))
+			: (updateDoc.tracks = [...updateDoc.tracks, trackId])
 
 		await updateDoc.save()
 
@@ -78,12 +80,12 @@ export class PlaylistService {
 
 	async updatePlaylist(_id: string, dto: UpdatePlaylistDto) {
 		const { name, poster } = dto
-		const playlist = await this.byId(_id)
-		if (!playlist) throw new NotFoundException('User not found')
 
+		const playlist = await this.byId(_id)
+
+		if (!playlist) throw new NotFoundException('User not found')
 		if (name) playlist.name = name
 		if (poster) playlist.poster = poster
-
 		await playlist.save()
 		return playlist
 	}
