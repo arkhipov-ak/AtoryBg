@@ -6,4 +6,7 @@ export class UpdateUserDto {
 
 	@prop()
 	poster: string
+
+	@prop()
+	password: string
 }

@@ -4,6 +4,7 @@ import { Types } from 'mongoose'
 import { InjectModel } from 'nestjs-typegoose'
 import { UpdateUserDto } from './update-user.dto'
 import { UserModel } from './user.model'
+import { genSalt, hash } from 'bcryptjs'
 
 @Injectable()
 export class UserService {
@@ -26,18 +27,23 @@ export class UserService {
 	}
 
 	async updateProfile(_id: string, dto: UpdateUserDto) {
-		const { name, poster } = dto
+		const { name, poster, password } = dto
 		const user = await this.byId(_id)
 		if (!user) throw new NotFoundException('User not found')
 
 		if (name) user.name = name
 		if (poster) user.poster = poster
+		if (password) {
+			const salt = await genSalt(10)
+			user.password = await hash(dto.password, salt)
+		}
 
 		await user.save()
 		return user
 	}
 
 	async getFavoriteTracks(_id: string) {
+		console.log(_id)
 		return this.UserModel.findById(_id, 'favorites')
 			.populate({
 				path: 'favorites',
