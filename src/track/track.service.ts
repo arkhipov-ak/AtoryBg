@@ -64,7 +64,6 @@ export class TrackService {
 		const newTrack = new this.TrackModel({
 			poster: dto.poster,
 			title: dto.title,
-			slug: dto.slug,
 			duration: dto.duration,
 			album: dto.album,
 			trackUrl: dto.trackUrl,
@@ -79,9 +78,9 @@ export class TrackService {
 		}
 	}
 
-	async updateCountOpened(slug: string) {
+	async updateCountOpened(_id: string) {
 		return this.TrackModel.findOneAndUpdate(
-			{ slug },
+			{ _id },
 			{ $inc: { countPlays: 1 } }
 		).exec()
 	}

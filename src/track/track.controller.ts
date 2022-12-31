@@ -26,8 +26,8 @@ export class TrackController {
 
 	@Put('/update-count-opened')
 	@HttpCode(200)
-	async updateCountOpened(@Body('slug') slug: string) {
-		return this.TrackService.updateCountOpened(slug)
+	async updateCountOpened(@Body('_id') _id: string) {
+		return this.TrackService.updateCountOpened(_id)
 	}
 
 	@UsePipes(new ValidationPipe())

@@ -65,9 +65,11 @@ export class PlaylistController {
 	async getAll(@Query('searchTerm') searchTerm?: string) {
 		return this.PlaylistService.getAll(searchTerm)
 	}
-
+	
 	@Get(':id')
 	async byId(@Param('id', IdValidationPipe) id: string) {
 		return this.PlaylistService.byId(id)
 	}
+
+
 }

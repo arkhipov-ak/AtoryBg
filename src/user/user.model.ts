@@ -1,6 +1,7 @@
 import { prop, Ref } from '@typegoose/typegoose'
 import { TimeStamps, Base } from '@typegoose/typegoose/lib/defaultClasses'
 import { IsOptional } from 'class-validator'
+import { ObjectId } from 'mongoose'
 import { PlaylistModel } from 'src/playlist/playlist.model'
 import { TrackModel } from 'src/track/track.model'
 

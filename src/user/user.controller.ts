@@ -20,12 +20,6 @@ import { UserService } from './user.service'
 export class UserController {
 	constructor(private readonly UserService: UserService) {}
 
-
-	@Get('profile/:id')
-	async getProfile(@Param('id') id: string) {
-		return this.UserService.byId(id)
-	}
-
 	@UsePipes(new ValidationPipe())
 	@Put('profile')
 	@HttpCode(200)
@@ -38,6 +32,11 @@ export class UserController {
 	@Auth()
 	async getFavorites(@User('_id') _id: string) {
 		return this.UserService.getFavoriteTracks(_id)
+	}
+
+	@Get('profile/:id')
+	async getProfile(@Param('id') id: string) {
+		return this.UserService.byId(id)
 	}
 
 	@Get('/playlists')

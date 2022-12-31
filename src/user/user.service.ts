@@ -43,7 +43,6 @@ export class UserService {
 	}
 
 	async getFavoriteTracks(_id: string) {
-		console.log(_id)
 		return this.UserModel.findById(_id, 'favorites')
 			.populate({
 				path: 'favorites',

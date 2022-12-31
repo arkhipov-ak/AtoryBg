@@ -13,9 +13,6 @@ export class TrackModel extends TimeStamps {
 	title: string
 
 	@prop()
-	slug: string
-
-	@prop()
 	duration: number
 
 	@prop({ default: 0 })

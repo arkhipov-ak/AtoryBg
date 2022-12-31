@@ -8,9 +8,6 @@ export class UpdateTrackDto {
 	title: string
 
 	@IsString()
-	slug: string
-
-	@IsString()
 	trackUrl: string
 
 	@IsNumber()
