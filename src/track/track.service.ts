@@ -88,6 +88,7 @@ export class TrackService {
 	async getMostPopular() {
 		return this.TrackModel.find({ countPlays: { $gt: 0 } })
 			.sort({ countPlays: -1 })
+			.select('-createdAt -updatedAt -__v')
 			.populate('album author')
 			.exec()
 	}
@@ -95,6 +96,7 @@ export class TrackService {
 	async getMostNew() {
 		return this.TrackModel.find()
 			.sort({ createdAt: 'desc' })
+			.select('-createdAt -updatedAt -__v')
 			.populate('album author')
 			.exec()
 	}
@@ -102,6 +104,7 @@ export class TrackService {
 	async byAuthor(authorIds: Types.ObjectId) {
 		if (!authorIds) throw new NotFoundException('Missing authorId')
 		const data = await this.TrackModel.find({ author: authorIds })
+			.select('-createdAt -updatedAt -__v')
 			.populate('album author')
 			.exec()
 

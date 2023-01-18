@@ -32,9 +32,9 @@ export class AlbumService {
 			}
 		}
 		return this.AlbumModel.find(options)
-			.select('-updatedAt -__v')
 			.sort({ createdAt: 'desc' })
 			.populate('author')
+			.select('-updatedAt -__v')
 			.exec()
 	}
 
@@ -64,7 +64,7 @@ export class AlbumService {
 					$sum: '$tracks.countPlays',
 				},
 			})
-			.project({ __v: 0, updatedAt: 0, tracks: 0 })
+			.project({ __v: 0, updatedAt: 0, tracks: 0, createdAt: 0 })
 			.sort({
 				amountPlays: -1,
 			})

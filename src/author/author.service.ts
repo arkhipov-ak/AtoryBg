@@ -11,7 +11,9 @@ export class AuthorService {
 	) {}
 
 	async bySlug(slug: string) {
-		const doc = await this.AuthorModel.findOne({ slug }).exec()
+		const doc = await this.AuthorModel.findOne({ slug })
+			.select('-__v -createdAt -updatedAt')
+			.exec()
 
 		if (!doc) throw new Error('Author not found')
 
@@ -31,7 +33,7 @@ export class AuthorService {
 			.addFields({
 				albums: '$albums',
 			})
-			.project({ __v: 0, updatedAt: 0 })
+			.project({ __v: 0, updatedAt: 0, createdAt: 0 })
 			.exec()
 
 		return albums
@@ -69,9 +71,9 @@ export class AuthorService {
 					$sum: '$tracks.countPlays',
 				},
 			})
-			.project({ __v: 0, updatedAt: 0, tracks: 0 })
+			.project({ __v: 0, updatedAt: 0, tracks: 0, createdAt: 0 })
 			.sort({
-				amountPlays: -1
+				amountPlays: -1,
 			})
 			.exec()
 	}
